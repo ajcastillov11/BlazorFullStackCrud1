@@ -1,0 +1,44 @@
+﻿@page "/superheroes"
+@inject ISuperHeroesService _SuperHeroesService
+
+<PageTitle>Super Heroes</PageTitle>
+
+<h3>SuperHeroes</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Hero Name</th>
+            <th>Comic</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in _SuperHeroesService.Heroes)
+        {
+            <tr>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.HeroName</td>
+                <td>@item.Comic.Name</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="(()=> ShowHero(item.Id))"><i class="oi oi-pencil"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await _SuperHeroesService.GetSuperHeroes();
+    }
+
+    void ShowHero(int id)
+    {
+
+    }
+}
