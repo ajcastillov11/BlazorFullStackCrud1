@@ -1,5 +1,6 @@
 ﻿@page "/superheroes"
 @inject ISuperHeroesService _SuperHeroesService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Super Heroes</PageTitle>
 
@@ -39,6 +40,6 @@
 
     void ShowHero(int id)
     {
-
+        NavigationManager.NavigateTo($"/hero/{id}");
     }
 }
