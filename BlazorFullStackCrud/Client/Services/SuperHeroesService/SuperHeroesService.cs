@@ -15,19 +15,19 @@ namespace BlazorFullStackCrud.Client.Services.SuperHeroesService
         public List<SuperHero> Heroes { get; set; } = new();
         public List<Comic> comics { get; set; } = new();
 
-        public Task<List<SuperHero>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
+      
         public Task GetComics()
         {
             throw new NotImplementedException();
         }
 
-        public Task<SuperHero> GetSingleHero(int id)
+        public async Task<SuperHero> GetSingleHero(int id)
         {
-            throw new NotImplementedException();
+            var result = await _http.GetFromJsonAsync<SuperHero>($"api/SuperHero/{id}");
+            if (result != null)
+                return result;
+            throw new Exception("No encontrado"); 
+
         }
 
         public async Task GetSuperHeroes()

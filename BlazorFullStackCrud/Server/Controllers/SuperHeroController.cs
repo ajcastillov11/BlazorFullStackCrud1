@@ -38,7 +38,7 @@ namespace BlazorFullStackCrud.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SuperHero>>> GetSuperHeroes()
         {
-            return Ok(superHeroes);
+            return await Task.FromResult(Ok(superHeroes));
         }
 
 
@@ -57,7 +57,7 @@ namespace BlazorFullStackCrud.Server.Controllers
                 return NotFound("Not found");
             }
 
-            return Ok(hero);
+            return await Task.FromResult(Ok(hero));
         }
 
     }
