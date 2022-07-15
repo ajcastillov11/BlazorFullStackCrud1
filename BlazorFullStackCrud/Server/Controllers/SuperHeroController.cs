@@ -72,7 +72,12 @@ namespace BlazorFullStackCrud.Server.Controllers
             var dbHero = await _context.SuperHeroes.FirstOrDefaultAsync(x=>x.Id == id);
             if (dbHero == null) return NotFound("Not found");
 
-            _context.SuperHeroes.Update(superHero);
+            dbHero.FirstName = superHero.FirstName;
+            dbHero.LastName = superHero.LastName;
+            dbHero.HeroName = superHero.HeroName;
+            dbHero.ComicID = superHero.ComicID;
+
+            _context.SuperHeroes.Update(dbHero);
             await _context.SaveChangesAsync();
   
 
