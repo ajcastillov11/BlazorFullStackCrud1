@@ -3,7 +3,7 @@
     public interface ISuperHeroesService
     {
         List<SuperHero> Heroes { get; set; }
-        List<Comic> comics { get; set; }
+        List<Comic> Comics { get; set; }
 
         Task GetComics();
         Task GetSuperHeroes();

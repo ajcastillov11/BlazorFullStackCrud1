@@ -10,7 +10,7 @@ namespace BlazorFullStackCrud.Server.Controllers
         public static List<Comic> comics = new()
         {
             new Comic { Id = 1,Name = "Marvel"},
-            new Comic { Id = 1,Name = "DC"}
+            new Comic { Id = 2,Name = "DC"}
         };
 
 
@@ -42,6 +42,13 @@ namespace BlazorFullStackCrud.Server.Controllers
         }
 
 
+        //comics
+        [HttpGet("comics")]
+        public async Task<ActionResult<IEnumerable<Comic>>> GetComics()
+        {
+            return await Task.FromResult(Ok(comics));
+        }
+
         /// <summary>
         /// Gets the single hero.
         /// </summary>
@@ -53,9 +60,8 @@ namespace BlazorFullStackCrud.Server.Controllers
             var hero = superHeroes.FirstOrDefault(x => x.Id.Equals(Id));
 
             if (hero == null)
-            {
                 return NotFound("Not found");
-            }
+
 
             return await Task.FromResult(Ok(hero));
         }
