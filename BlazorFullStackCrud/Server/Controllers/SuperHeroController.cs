@@ -7,38 +7,21 @@ namespace BlazorFullStackCrud.Server.Controllers
     [ApiController]
     public class SuperHeroController : ControllerBase
     {
-        public static List<Comic> comics = new()
+        private readonly AppDataContext _context;
+        public SuperHeroController(AppDataContext context)
         {
-            new Comic { Id = 1,Name = "Marvel"},
-            new Comic { Id = 2,Name = "DC"}
-        };
-
-
-        public static List<SuperHero> superHeroes = new()
-        {
-            new SuperHero { 
-                Id= 1,
-                FirstName = "Peter", 
-                LastName="Parker",
-                ComicID=1,
-                HeroName="Spiderman",
-                Comic = comics[0]
-            },
-             new SuperHero {
-                Id= 2,
-                FirstName = "Bruce",
-                LastName="Wayne",
-                ComicID=2,
-                HeroName="Batman",
-                Comic = comics[1]
-            }
-        };
+            _context = context;
+        }
 
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SuperHero>>> GetSuperHeroes()
         {
-            return await Task.FromResult(Ok(superHeroes));
+            var heroes = await _context.SuperHeroes
+                .Include(c=>c.Comic)
+                .ToListAsync();
+            return Ok(heroes);
+
         }
 
 
@@ -46,7 +29,8 @@ namespace BlazorFullStackCrud.Server.Controllers
         [HttpGet("comics")]
         public async Task<ActionResult<IEnumerable<Comic>>> GetComics()
         {
-            return await Task.FromResult(Ok(comics));
+            var comics = await _context.Comics.ToListAsync();
+            return Ok(comics);
         }
 
         /// <summary>
@@ -57,14 +41,60 @@ namespace BlazorFullStackCrud.Server.Controllers
         [HttpGet("{Id}")]
         public async Task<ActionResult<SuperHero>> GetSingleHero(int Id)
         {
-            var hero = superHeroes.FirstOrDefault(x => x.Id.Equals(Id));
+            var hero = await _context.SuperHeroes
+                .Include(x=>x.Comic)
+                .FirstOrDefaultAsync(x => x.Id.Equals(Id));
 
             if (hero == null)
                 return NotFound("Not found");
 
 
-            return await Task.FromResult(Ok(hero));
+            return Ok(hero);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<List<SuperHero>>> CreateSuperHero(SuperHero superHero)
+        {
+
+            superHero.Comic = null;
+            _context.SuperHeroes.Add(superHero);
+            await _context.SaveChangesAsync();
+
+
+            return Ok(await GetDbHeroes());
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<List<SuperHero>>> UpdateSuperHero(SuperHero superHero, int id)
+        {
+
+            var dbHero = await _context.SuperHeroes.FirstOrDefaultAsync(x=>x.Id == id);
+            if (dbHero == null) return NotFound("Not found");
+
+            _context.SuperHeroes.Update(superHero);
+            await _context.SaveChangesAsync();
+  
+
+            return Ok(await GetDbHeroes());
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<List<SuperHero>>> DeleteSuperHero(int id)
+        {
+
+            var dbHero = await _context.SuperHeroes.FirstOrDefaultAsync(x => x.Id == id);
+            if (dbHero == null) return NotFound("Not found");
+
+            _context.SuperHeroes.Remove(dbHero);
+            await _context.SaveChangesAsync();
+
+
+            return Ok(await GetDbHeroes());
+        }
+
+        private async Task<List<SuperHero>> GetDbHeroes() 
+            => await _context.SuperHeroes.Include(sh=>sh.Comic).ToListAsync();
 
     }
 }

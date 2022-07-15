@@ -9,7 +9,10 @@
         Task GetSuperHeroes();
         Task<SuperHero> GetSingleHero(int id);
     
-            
+        Task CreateHero(SuperHero entity);
+        Task UpdateHero(SuperHero entity);
+        Task DeleteHero(int id);
+        
 
     }
 }
