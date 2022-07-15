@@ -1,14 +1,17 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Components;
+using System.Net.Http.Json;
 
 namespace BlazorFullStackCrud.Client.Services.SuperHeroesService
 {
     public class SuperHeroesService : ISuperHeroesService
     {
         private readonly HttpClient _http;
+        private readonly NavigationManager _navigationManager;
 
-        public SuperHeroesService(HttpClient httpClient)
+        public SuperHeroesService(HttpClient httpClient, NavigationManager navigationManager)
         {
             _http = httpClient;
+            _navigationManager = navigationManager;
         }
 
 
@@ -18,12 +21,19 @@ namespace BlazorFullStackCrud.Client.Services.SuperHeroesService
         public async Task CreateHero(SuperHero entity)
         {
             var result = await _http.PostAsJsonAsync("api/SuperHero", entity);
-            var response = await result.Content.ReadFromJsonAsync<List<SuperHero>>();
+            await SetHeroes(result);
         }
 
-        public Task DeleteHero(int id)
+        public async Task DeleteHero(int id)
         {
-            throw new NotImplementedException();
+            var result = await _http.DeleteAsync($"api/SuperHero/{id}");
+            await SetHeroes(result);
+        }
+
+        private async Task SetHeroes(HttpResponseMessage result)
+        {
+            var response = await result.Content.ReadFromJsonAsync<List<SuperHero>>();
+            Heroes = response;
         }
 
         public async Task GetComics()
@@ -49,9 +59,10 @@ namespace BlazorFullStackCrud.Client.Services.SuperHeroesService
                 Heroes = result;
         }
 
-        public Task UpdateHero(SuperHero entity)
+        public async Task UpdateHero(SuperHero entity)
         {
-            throw new NotImplementedException();
+            var result = await _http.PutAsJsonAsync($"api/SuperHero/{entity.Id}", entity);
+            await SetHeroes(result);
         }
     }
 }
